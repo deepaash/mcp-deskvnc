@@ -24,6 +24,16 @@ import process from "node:process";
 
 const require = createRequire(import.meta.url);
 
+process.on("SIGPIPE", () => {
+  process.exit(0);
+});
+process.stdout.on("error", (err) => {
+  if (err && err.code === "EPIPE") process.exit(0);
+});
+process.stderr.on("error", (err) => {
+  if (err && err.code === "EPIPE") process.exit(0);
+});
+
 const USAGE = `dvv-mcp ${VERSION}
 
 Usage:

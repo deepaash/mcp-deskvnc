@@ -1,0 +1,47 @@
+{
+  "name": "mcp-deskvnc",
+  "version": "1.0.0",
+  "description": "DeskVNC MCP discovery for AI agents. Carries dvv tool manifest, observe-then-act loop, and paste-ready client configs.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "dvv-mcp": "./bin/dvv-mcp.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node test/run-tests.js"
+  },
+  "keywords": [
+    "deskvnc",
+    "mcp",
+    "model-context-protocol",
+    "vnc",
+    "rdp",
+    "ssh",
+    "remote-desktop",
+    "ai-agent",
+    "dvv"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepaash/mcp-deskvnc.git"
+  },
+  "homepage": "https://github.com/deepaash/mcp-deskvnc#readme",
+  "bugs": {
+    "url": "https://github.com/deepaash/mcp-deskvnc/issues"
+  }
+}

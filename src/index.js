@@ -276,54 +276,113 @@ const TOOLS = Object.freeze([
   {
     name: "dvv_group_open",
     description:
-      "Address several machines as one. Open every saved host whose name matches a glob in one call.",
+      "Opens several limbs at once and returns a groupId to address them together with dvv_group_run, or one at a time with any tool's groupId and member. Every member is a real connection that stays open until dvv_group_close, so prefer the smallest group the task needs. If any member fails to open, the ones this call opened are closed again, so a retry is not fighting a half open group.",
     inputSchema: {
       type: "object",
       properties: {
-        glob: { type: "string" },
-        perceive: { type: "boolean", default: false },
+        hostIds: { type: "array", items: { type: "string" } },
+        addresses: { type: "array", items: { type: "string" } },
+        protocol: { type: "string", enum: ["vnc", "rdp", "ssh"] },
+        perceive: { type: "boolean" },
       },
-      required: ["glob"],
       additionalProperties: false,
     },
   },
   {
-    name: "dvv_group_screen",
-    description: "Read the screen of every limb in a group, returning a map of limbId to image.",
+    name: "dvv_group_list",
+    description:
+      "Open groups, or one group's members with their index, limbId, host and state. Cheap and local: reads this server's own registry, no round trip to any machine.",
     inputSchema: {
       type: "object",
-      properties: {
-        group: { type: "string" },
-        form: { type: "string", enum: ["full", "damage-crop"] },
-        scale: { type: "number" },
-      },
-      required: ["group"],
+      properties: { groupId: { type: "string" } },
       additionalProperties: false,
     },
   },
   {
     name: "dvv_group_run",
-    description: "Run a shell command on every SSH limb in a group in parallel.",
+    description:
+      "Runs one action on every member of a group at once, concurrently and not in a loop: every member starts before any finishes. One member failing is reported for that member alone and never stops the others. Action is wait, screen, status, signals, type, key, click or run. This is the tool to reach for when driving more than one machine.",
     inputSchema: {
       type: "object",
       properties: {
-        group: { type: "string" },
-        command: { type: "string" },
-        timeoutMs: { type: "integer" },
+        groupId: { type: "string" },
+        action: { type: "string", enum: ["wait", "screen", "status", "signals", "type", "key", "click", "run"] },
+        arguments: { type: "object" },
       },
-      required: ["group", "command"],
+      required: ["groupId", "action"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "dvv_group_grow",
+    description:
+      "Opens more limbs and appends them to a group. New members get the next index; existing members are untouched.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        groupId: { type: "string" },
+        hostIds: { type: "array", items: { type: "string" } },
+        addresses: { type: "array", items: { type: "string" } },
+        protocol: { type: "string", enum: ["vnc", "rdp", "ssh"] },
+        perceive: { type: "boolean" },
+      },
+      required: ["groupId"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "dvv_group_shrink",
+    description:
+      "Closes the n most recently added members and drops them from the group. Fails rather than clamping if n is larger than the group holds, because a clamp would turn closing three into closing everything, silently.",
+    inputSchema: {
+      type: "object",
+      properties: { groupId: { type: "string" }, n: { type: "number" } },
+      required: ["groupId", "n"],
       additionalProperties: false,
     },
   },
   {
     name: "dvv_group_close",
-    description: "Close every limb in a group and release every lease.",
+    description:
+      "Closes every limb in a group and forgets it. A member that has already gone is not an error.",
+    inputSchema: {
+      type: "object",
+      properties: { groupId: { type: "string" } },
+      required: ["groupId"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "dvv_status",
+    description:
+      "State, protocol, size, geometry generation, lease holder and the negotiated signals for one limb, as the full observation object. It does not clear the typing fence: it reads no pixels, and a call that told you nothing about what is on the screen must not be able to say you have looked at it. Cheapest call in the manifest, safe to call constantly, needs no lease. After a LEASE_REVOKED, read lease.human_took_over: true means a person is driving and the right move is to stop.",
+    inputSchema: {
+      type: "object",
+      properties: { limbId: { type: "string" }, groupId: { type: "string" }, member: { type: "string" } },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "dvv_signals",
+    description:
+      "Which negotiated signals this session actually has, and what each absence means. Every entry is live, absent or unknown with a reason, and never a default: absent means we asked and the far side does not do it, unknown means nothing has arrived yet and may resolve. Read led_state before typing a password.",
+    inputSchema: {
+      type: "object",
+      properties: { limbId: { type: "string" }, groupId: { type: "string" }, member: { type: "string" } },
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "dvv_transfer",
+    description:
+      "Reports that there is no transfer queue on this surface, by design. dvv_files does not queue anything: a get or a put runs to completion inside its own tool call and answers with what it moved, so there is no transfer id to look up and nothing in flight to cancel. A transfer that failed part way said so in that call with the byte count, and the repair is to call dvv_files again.",
     inputSchema: {
       type: "object",
       properties: {
-        group: { type: "string" },
+        limbId: { type: "string" },
+        action: { type: "string", enum: ["status", "cancel"] },
+        transferId: { type: "string" },
       },
-      required: ["group"],
       additionalProperties: false,
     },
   },
@@ -389,15 +448,35 @@ const TOOL_REFERENCE = Object.freeze([
   ],
   [
     "dvv_group_open",
-    "Open every saved host whose name matches a glob in one call.",
+    "Open several limbs at once and return a groupId to address them together.",
   ],
   [
-    "dvv_group_screen",
-    "Read the screen of every limb in a group in parallel.",
+    "dvv_group_list",
+    "List open groups, or one group's members with their index, limbId, host and state.",
+  ],
+  [
+    "dvv_group_grow",
+    "Open more limbs and append them to a group. New members get the next index.",
+  ],
+  [
+    "dvv_group_shrink",
+    "Close the n most recently added members and drop them from the group.",
+  ],
+  [
+    "dvv_status",
+    "State, protocol, size, geometry generation, lease holder and signals for one limb. Reads no pixels and needs no lease.",
+  ],
+  [
+    "dvv_signals",
+    "Which negotiated signals this session has, and what each absence means.",
+  ],
+  [
+    "dvv_transfer",
+    "Reports that there is no transfer queue on this surface, by design.",
   ],
   [
     "dvv_group_run",
-    "Run a shell command on every SSH limb in a group in parallel.",
+    "Run one action on every member of a group concurrently. Action is wait, screen, status, signals, type, key, click or run.",
   ],
   [
     "dvv_group_close",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Handle SIGPIPE in the CLI so piping into `head` or `tail` exits cleanly.
+
 ## 1.0.0
 
 Initial release.

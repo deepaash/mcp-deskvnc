@@ -8,7 +8,7 @@
 //
 // No runtime dependencies. The Node standard library is enough.
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 const PACKAGE_NAME = "@deepaash/mcp-deskvnc";
 const SERVER_NAME = "deskvnc-dvv";
 const SERVER_VERSION = "0.27.11";

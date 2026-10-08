@@ -1,6 +1,6 @@
 {
   "name": "@deepaash/mcp-deskvnc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "DeskVNC MCP discovery for AI agents. Carries dvv tool manifest, observe-then-act loop, and paste-ready client configs.",
   "license": "MIT",
   "type": "module",

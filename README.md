@@ -180,7 +180,7 @@ dvv-mcp version
 - Hub: <https://deskvnc-hub.pages.dev/>
 - Hosted MCP endpoint: <https://deskvnc-mcp.deepika-aaish.workers.dev/mcp>
 - This package: <https://github.com/deepaash/mcp-deskvnc>
-- jsDelivr CDN: <https://cdn.jsdelivr.net/gh/deepaash/mcp-deskvnc@main/>
+- jsDelivr CDN: <https://cdn.jsdelivr.net/gh/deepaash/mcp-deskvnc@main/README.md>
 
 ## License
 

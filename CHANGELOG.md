@@ -4,10 +4,10 @@
 
 Initial release.
 
-- ESM module exposing `serverManifest`, `toolReference`, `agentLoop`,
-  `facts`, `mcpConfig`, `binaryLocations`, `defaultBinaryPath` and the
-  frozen constants (`TOOLS`, `TOOL_REFERENCE`, `AGENT_LOOP`, `FACTS`,
-  `ERROR_CODES`, `BINARY_LOCATIONS`).
+- ESM module `@deepaash/mcp-deskvnc` exposing `serverManifest`,
+  `toolReference`, `agentLoop`, `facts`, `mcpConfig`, `binaryLocations`,
+  `defaultBinaryPath` and the frozen constants (`TOOLS`, `TOOL_REFERENCE`,
+  `AGENT_LOOP`, `FACTS`, `ERROR_CODES`, `BINARY_LOCATIONS`).
 - `dvv-mcp` CLI with subcommands `manifest`, `tools`, `loop`, `facts`,
   `config <client>`, `serve`, `version`.
 - stdio MCP server (`dvv-mcp serve`) implementing `initialize`,
@@ -20,3 +20,5 @@ Initial release.
 - Real error codes: `LIMB_GONE`, `SCREEN_CHANGED`, `LEASE_REVOKED`.
 - Real binary locations for macOS, Windows and Linux.
 - `server.json` at the repo root for the Model Context Protocol registry.
+- Published to GitHub Packages as `@deepaash/mcp-deskvnc` (the scope is
+  required by the GitHub Packages npm registry).

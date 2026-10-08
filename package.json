@@ -1,5 +1,5 @@
 {
-  "name": "mcp-deskvnc",
+  "name": "@deepaash/mcp-deskvnc",
   "version": "1.0.0",
   "description": "DeskVNC MCP discovery for AI agents. Carries dvv tool manifest, observe-then-act loop, and paste-ready client configs.",
   "license": "MIT",
@@ -36,6 +36,10 @@
     "ai-agent",
     "dvv"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/deepaash/mcp-deskvnc.git"

@@ -28,7 +28,7 @@ runtime that knows how to read a package by name.
 ## Install
 
 ```sh
-npm install -g mcp-deskvnc
+npm install -g @deepaash/mcp-deskvnc
 ```
 
 That places the `dvv-mcp` command on the path.
@@ -136,7 +136,7 @@ import {
   facts,
   mcpConfig,
   binaryLocations,
-} from "mcp-deskvnc";
+} from "@deepaash/mcp-deskvnc";
 
 serverManifest();   // MCP server manifest with the full tool list
 toolReference();    // every dvv tool and what it does
